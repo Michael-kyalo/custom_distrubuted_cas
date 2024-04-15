@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/Michael-kyalo/custom_distrubuted_cas/p2p"
 )
@@ -17,11 +17,17 @@ func main() {
 	// Create a new TCPTransporter instance to handle peer-to-peer communication over TCP on port 3000.
 	tcpTransporter := p2p.NewTCPTransporter(tcpOptions)
 
+	go func() {
+		for {
+			message := <-tcpTransporter.Consume()
+			fmt.Printf("Received message from %v: %v\n", message.Origin, message.Data)
+		}
+	}()
 	// Listen for incoming connections and accept them.
 	// This call blocks until an error occurs or the listener is closed.
 	if err := tcpTransporter.ListenAndAccept(); err != nil {
 		// If an error occurs during listening and accepting connections, log the error and exit the program.
-		log.Printf("Error listening to connection \n%v", err)
+		fmt.Printf("Error listening to connection \n%v", err)
 	}
 
 	// The following select statement blocks indefinitely, ensuring that the program continues to run
