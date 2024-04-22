@@ -152,7 +152,7 @@ func (t *TCPTransporter) handleConnection(conn net.Conn) {
 
 		if err := t.Decoder.Decode(conn, &message); err != nil {
 			fmt.Printf("There was an error decoding message: %v\n connection %v", err, conn)
-			continue
+			return
 		}
 
 		message.Origin = conn.RemoteAddr()

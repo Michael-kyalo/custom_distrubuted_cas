@@ -26,4 +26,5 @@ func TestTransformPathFunc(t *testing.T) {
 	if path.Key != expectedPath {
 		t.Errorf("Expected path to be %s, got %s", expectedPath, path)
 	}
+
 }

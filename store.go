@@ -22,7 +22,8 @@ func PathTransformation(key string) PathData {
 	path := make([]string, sliceSize)
 
 	for i := 0; i < sliceSize; i++ {
-		path[i] = hashStr[i*blockSize : (i*blockSize)+blockSize]
+		from, to := i*blockSize, (i*blockSize)+blockSize
+		path[i] = hashStr[from:to]
 	}
 
 	return PathData{
@@ -46,6 +47,10 @@ type PathData struct {
 	Key  string
 }
 
+func (p PathData) FullPath() string {
+	return p.Path + "/" + p.Key
+}
+
 type StoreConfig struct {
 	TransformPathFunc TransformPathFunc
 }
@@ -55,6 +60,17 @@ type Store struct {
 
 func NewStore(storeConfig StoreConfig) *Store {
 	return &Store{storeConfig}
+}
+
+func (s *Store) readStream(key string) (io.Reader, error) {
+
+	pathName := s.TransformPathFunc(key)
+
+	file, err := os.Open(pathName.FullPath())
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
 }
 
 func (s *Store) writeStream(key string, reader io.Reader) error {
